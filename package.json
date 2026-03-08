@@ -1,0 +1,36 @@
+{
+    "name": "express-mysql-auth-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "src/server.js",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "dev": "nodemon src/server.js",
+        "start": "node src/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/shazzad-hosen/express-mysql-auth-api.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/shazzad-hosen/express-mysql-auth-api/issues"
+    },
+    "homepage": "https://github.com/shazzad-hosen/express-mysql-auth-api#readme",
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.3.1",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "mysql2": "^3.19.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
+}
