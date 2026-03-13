@@ -1,15 +1,18 @@
 import pool from "../config/db.js";
 
 export const createUser = async ({ email, passwordHash }) => {
-  const query = `INSERT INTO users (email, password_hash) VALUES (?, ?)`;
+  const query = ` INSERT INTO users (email, password_hash) VALUES (?, ?) `;
 
   const [result] = await pool.execute(query, [email, passwordHash]);
 
-  return result.insertId;
+  return {
+    id: result.insertId,
+    email,
+  };
 };
 
 export const findUserByEmail = async (email) => {
-  const query = `SELECT * FROM users WHERE email = ? LIMIT 1`;
+  const query = ` SELECT * FROM users WHERE email = ? LIMIT 1 `;
 
   const [rows] = await pool.execute(query, [email]);
 
@@ -17,11 +20,7 @@ export const findUserByEmail = async (email) => {
 };
 
 export const findUserById = async (id) => {
-  const query = `
-    SELECT id, email, role, is_verified
-    FROM users
-    WHERE id = ?
-  `;
+  const query = ` SELECT id, email, role, is_verified FROM users WHERE id = ? `;
 
   const [rows] = await pool.execute(query, [id]);
 
