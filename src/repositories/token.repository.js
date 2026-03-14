@@ -1,9 +1,21 @@
 import pool from "../config/db.js";
 
-export const createRefreshToken = async ({ userId, tokenHash, expiresAt }) => {
-  const query = ` INSERT INTO refresh_tokens (user_id, token_hash, expires_at)VALUES (?, ?, ?) `;
+export const createRefreshToken = async ({
+  userId,
+  tokenHash,
+  expiresAt,
+  user_agent,
+  ip,
+}) => {
+  const query = ` INSERT INTO refresh_tokens (user_id, token_hash, expires_at, user_agent, ip)VALUES (?, ?, ?, ?, ?) `;
 
-  const [result] = await pool.execute(query, [userId, tokenHash, expiresAt]);
+  const [result] = await pool.execute(query, [
+    userId,
+    tokenHash,
+    expiresAt,
+    user_agent || null,
+    ip || null,
+  ]);
 
   return result.insertId;
 };
