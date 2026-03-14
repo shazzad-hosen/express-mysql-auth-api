@@ -4,7 +4,10 @@ import { ENV } from "../config/env.js";
 import { parseToMs } from "../utils/parseToMs.js";
 
 export const registerUserController = async (req, res) => {
-  const result = await registerUser(req.body);
+  const result = await registerUser(req.body, {
+    userAgent: req.headers["user-agent"],
+    ip: req.ip,
+  });
 
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,

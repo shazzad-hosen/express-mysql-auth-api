@@ -20,8 +20,9 @@ import {
   hashToken,
 } from "../utils/generateTokens.js";
 
-export const registerUser = async (data) => {
+export const registerUser = async (data, meta) => {
   const { email, password } = data;
+  const { userAgent, ip } = meta;
 
   const existingUser = await findUserByEmail(email);
 
@@ -47,6 +48,8 @@ export const registerUser = async (data) => {
     userId: user.id,
     tokenHash,
     expiresAt,
+    userAgent,
+    ip,
   });
 
   return {
@@ -83,6 +86,8 @@ export const loginUser = async (data, meta) => {
     userId: user.id,
     tokenHash,
     expiresAt,
+    userAgent,
+    ip,
   });
 
   return {
@@ -94,3 +99,5 @@ export const loginUser = async (data, meta) => {
     refreshToken,
   };
 };
+
+export const refreshUserToken = async () => {};
