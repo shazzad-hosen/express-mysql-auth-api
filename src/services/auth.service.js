@@ -134,3 +134,14 @@ export const refreshUserToken = async (userId, existingRefreshToken, meta) => {
     refreshToken: newRefreshToken,
   };
 };
+
+export const logoutUser = async (incomingRefreshToken) => {
+  if (!incomingRefreshToken || typeof incomingRefreshToken !== "string") {
+    return { success: true, message: "No active session found" };
+  }
+
+  const hashedRefreshToken = await hashToken(incomingRefreshToken);
+  await deleteRefreshTokenByHash(hashedRefreshToken);
+
+  return { success: true, message: "Session revoked successfully" };
+};

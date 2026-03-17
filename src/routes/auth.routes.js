@@ -6,6 +6,7 @@ import {
   registerUserController,
   loginUserController,
   refreshUserTokenController,
+  logoutUserController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router.post(
   verifyRefreshToken,
   asyncHandler(refreshUserTokenController),
 );
+
+router.post("/logout", asyncHandler(logoutUserController));
 
 export default router;

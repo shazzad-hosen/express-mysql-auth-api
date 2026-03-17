@@ -2,6 +2,7 @@ import {
   registerUser,
   loginUser,
   refreshUserToken,
+  logoutUser,
 } from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
@@ -68,5 +69,21 @@ export const refreshUserTokenController = async (req, res) => {
   res.status(200).json({
     success: true,
     accessToken: tokens.accessToken,
+  });
+};
+
+export const logoutUserController = async (req, res) => {
+  const token = req.cookies?.refreshToken;
+  await logoutUser(token);
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: ENV.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
   });
 };
