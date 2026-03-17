@@ -12,6 +12,7 @@ import {
   createRefreshToken,
   findRefreshToken,
   deleteRefreshToken,
+  deleteRefreshTokenByHash,
 } from "../repositories/token.repository.js";
 
 import {
@@ -100,4 +101,36 @@ export const loginUser = async (data, meta) => {
   };
 };
 
-export const refreshUserToken = async () => {};
+export const refreshUserToken = async (userId, existingRefreshToken, meta) => {
+  const sessionData = await findRefreshToken(existingRefreshToken);
+
+  if (!sessionData) {
+    throw new ApiError(403, "Session not found");
+  }
+
+  const userData = {
+    id: sessionData.user_id,
+    role: sessionData.role || "user",
+  };
+
+  const newAccessToken = await generateAccessToken(userData);
+  const newRefreshToken = await generateRefreshToken(userData);
+
+  const newRefreshHash = await hashToken(newRefreshToken);
+  const expiresAt = new Date(Date.now() + parseToMs(ENV.JWT_REFRESH_EXPIRY));
+
+  await deleteRefreshTokenByHash(existingRefreshToken);
+
+  await createRefreshToken({
+    userId,
+    tokenHash: newRefreshHash,
+    expiresAt,
+    userAgent: meta.userAgent,
+    ip: meta.ip,
+  });
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  };
+};

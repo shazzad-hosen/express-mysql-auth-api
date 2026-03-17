@@ -24,7 +24,7 @@ const verifyRefreshToken = async (req, res, next) => {
     }
 
     req.userId = decoded.id;
-    req.tokenData = existingToken;
+    req.refreshToken = existingToken.token_hash;
 
     next();
   } catch (error) {

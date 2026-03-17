@@ -1,4 +1,8 @@
-import { registerUser, loginUser } from "../services/auth.service.js";
+import {
+  registerUser,
+  loginUser,
+  refreshUserToken,
+} from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
 import { parseToMs } from "../utils/parseToMs.js";
@@ -45,5 +49,24 @@ export const loginUserController = async (req, res) => {
       user: result.user,
       accessToken: result.accessToken,
     },
+  });
+};
+
+export const refreshUserTokenController = async (req, res) => {
+  const tokens = await refreshUserToken(req.userId, req.refreshToken, {
+    userAgent: req.headers["user-agent"],
+    ip: req.ip,
+  });
+
+  res.cookie("refreshToken", tokens.refreshToken, {
+    httpOnly: true,
+    secure: ENV.NODE_ENV,
+    sameSite: "strict",
+    maxAge: parseToMs(ENV.JWT_REFRESH_EXPIRY),
+  });
+
+  res.status(200).json({
+    success: true,
+    accessToken: tokens.accessToken,
   });
 };
