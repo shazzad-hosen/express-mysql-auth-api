@@ -32,8 +32,10 @@ export const hashToken = async (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
 
-export const decodeToken = async (token) => {
-  const decoded = jwt.verify(token, ENV.JWT_REFRESH_SECRET);
-  
-  return decoded;
+export const decodeRefreshToken = async (token) => {
+  return jwt.verify(token, ENV.JWT_REFRESH_SECRET);
+};
+
+export const decodeAccessToken = async (token) => {
+  return jwt.verify(token, ENV.JWT_ACCESS_SECRET);
 };
