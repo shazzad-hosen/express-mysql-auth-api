@@ -39,3 +39,9 @@ export const deleteRefreshTokenByHash = async (tokenHash) => {
 
   await pool.execute(query, [tokenHash]);
 };
+
+export const deleteRefreshTokenByUserId = async (userId) => {
+  const query = ` DELETE FROM refresh_tokens WHERE user_id ? `;
+
+  await pool.execute(query, [userId]);
+};
