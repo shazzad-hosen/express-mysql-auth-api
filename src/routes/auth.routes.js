@@ -1,12 +1,14 @@
 import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
 import verifyRefreshToken from "../middlewares/verifyRefreshToken.middleware.js";
+import verifyAccessToken from "../middlewares/verifyAccessToken.middleware.js";
 
 import {
   registerUserController,
   loginUserController,
   refreshUserTokenController,
   logoutUserController,
+  logoutAllUserController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -22,5 +24,11 @@ router.post(
 );
 
 router.post("/logout", asyncHandler(logoutUserController));
+
+router.post(
+  "/logout-all",
+  verifyAccessToken,
+  asyncHandler(logoutAllUserController),
+);
 
 export default router;

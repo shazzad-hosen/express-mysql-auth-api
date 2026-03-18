@@ -13,6 +13,7 @@ import {
   findRefreshToken,
   deleteRefreshToken,
   deleteRefreshTokenByHash,
+  deleteRefreshTokenByUserId,
 } from "../repositories/token.repository.js";
 
 import {
@@ -143,5 +144,17 @@ export const logoutUser = async (incomingRefreshToken) => {
   const hashedRefreshToken = await hashToken(incomingRefreshToken);
   await deleteRefreshTokenByHash(hashedRefreshToken);
 
-  return { success: true, message: "Session revoked successfully" };
+  return {
+    success: true,
+    message: "Session revoked successfully",
+  };
+};
+
+export const logoutAllUser = async (userId) => {
+  await deleteRefreshTokenByUserId(userId);
+
+  return {
+    success: true,
+    message: "Logged out from all devices",
+  };
 };
