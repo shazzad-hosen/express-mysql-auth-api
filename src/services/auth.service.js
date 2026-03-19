@@ -14,6 +14,7 @@ import {
   deleteRefreshToken,
   deleteRefreshTokenByHash,
   deleteRefreshTokenByUserId,
+  findSessionsByUserId,
 } from "../repositories/token.repository.js";
 
 import {
@@ -156,5 +157,13 @@ export const logoutAllUser = async (userId) => {
   return {
     success: true,
     message: "Logged out from all devices",
+  };
+};
+
+export const getActiveSessions = async (userId) => {
+  const sessions = await findSessionsByUserId(userId);
+
+  return {
+    sessions,
   };
 };

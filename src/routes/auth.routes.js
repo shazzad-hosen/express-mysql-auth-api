@@ -9,6 +9,7 @@ import {
   refreshUserTokenController,
   logoutUserController,
   logoutAllUserController,
+  getActiveSessionsController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -29,6 +30,12 @@ router.post(
   "/logout-all",
   verifyAccessToken,
   asyncHandler(logoutAllUserController),
+);
+
+router.get(
+  "/sessions",
+  verifyAccessToken,
+  asyncHandler(getActiveSessionsController),
 );
 
 export default router;

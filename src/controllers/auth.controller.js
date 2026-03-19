@@ -4,6 +4,7 @@ import {
   refreshUserToken,
   logoutUser,
   logoutAllUser,
+  getActiveSessions,
 } from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
@@ -101,5 +102,14 @@ export const logoutAllUserController = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Successfully logged out from all devices.",
+  });
+};
+
+export const getActiveSessionsController = async (req, res) => {
+  const sessions = await getActiveSessions(req.userId);
+
+  res.status(200).json({
+    success: true,
+    data: sessions,
   });
 };

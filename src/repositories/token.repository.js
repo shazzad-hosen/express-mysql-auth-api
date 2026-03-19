@@ -45,3 +45,10 @@ export const deleteRefreshTokenByUserId = async (userId) => {
 
   await pool.execute(query, [userId]);
 };
+
+export const findSessionsByUserId = async (userId) => {
+  const query = ` SELECT id, user_agent, ip, expires_at, created_at FROM refresh_tokens WHERE user_id = ? ORDER BY created_at DESC `;
+
+  const [rows] = await pool.execute(query, [userId]);
+  return rows;
+};
