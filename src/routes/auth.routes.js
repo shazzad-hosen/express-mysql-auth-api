@@ -10,6 +10,7 @@ import {
   logoutUserController,
   logoutAllUserController,
   getActiveSessionsController,
+  revokeSpecificSessionController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -36,6 +37,12 @@ router.get(
   "/sessions",
   verifyAccessToken,
   asyncHandler(getActiveSessionsController),
+);
+
+router.delete(
+  "/sessions/:id",
+  verifyAccessToken,
+  asyncHandler(revokeSpecificSessionController),
 );
 
 export default router;

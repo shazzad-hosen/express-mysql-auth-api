@@ -1,5 +1,5 @@
 import ApiError from "../utils/ApiError.js";
-import { findRefreshToken } from "../repositories/token.repository.js";
+import { findRefreshTokenByHash } from "../repositories/token.repository.js";
 import { decodeRefreshToken, hashToken } from "../utils/generateTokens.js";
 
 const verifyRefreshToken = async (req, res, next) => {
@@ -13,7 +13,7 @@ const verifyRefreshToken = async (req, res, next) => {
     const decoded = await decodeRefreshToken(token);
 
     const hashedToken = await hashToken(token);
-    const existingToken = await findRefreshToken(hashedToken);
+    const existingToken = await findRefreshTokenByHash(hashedToken);
 
     if (!existingToken) {
       return next(new ApiError(403, "Invalid session. Please login again."));

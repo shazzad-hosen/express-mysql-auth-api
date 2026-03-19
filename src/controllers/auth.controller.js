@@ -5,6 +5,7 @@ import {
   logoutUser,
   logoutAllUser,
   getActiveSessions,
+  revokeSpecificSession,
 } from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
@@ -76,7 +77,7 @@ export const refreshUserTokenController = async (req, res) => {
 
 export const logoutUserController = async (req, res) => {
   const token = req.cookies?.refreshToken;
-  await logoutUser(token);
+  const result = await logoutUser(token);
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -86,12 +87,12 @@ export const logoutUserController = async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: "Logged out successfully",
+    ...result,
   });
 };
 
 export const logoutAllUserController = async (req, res) => {
-  await logoutAllUser(req.userId);
+  const data = await logoutAllUser(req.userId);
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -101,7 +102,7 @@ export const logoutAllUserController = async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    message: "Successfully logged out from all devices.",
+    ...data,
   });
 };
 
@@ -110,6 +111,16 @@ export const getActiveSessionsController = async (req, res) => {
 
   res.status(200).json({
     success: true,
+    total: sessions["sessions"].length,
     data: sessions,
+  });
+};
+
+export const revokeSpecificSessionController = async (req, res) => {
+  const session = await revokeSpecificSession(req.userId, req.params.id);
+
+  res.status(200).json({
+    success: true,
+    ...session,
   });
 };

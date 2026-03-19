@@ -10,8 +10,8 @@ import {
 
 import {
   createRefreshToken,
-  findRefreshToken,
-  deleteRefreshToken,
+  findRefreshTokenByHash,
+  deleteRefreshTokenById,
   deleteRefreshTokenByHash,
   deleteRefreshTokenByUserId,
   findSessionsByUserId,
@@ -104,7 +104,7 @@ export const loginUser = async (data, meta) => {
 };
 
 export const refreshUserToken = async (userId, existingRefreshToken, meta) => {
-  const sessionData = await findRefreshToken(existingRefreshToken);
+  const sessionData = await findRefreshTokenByHash(existingRefreshToken);
 
   if (!sessionData) {
     throw new ApiError(403, "Session not found");
@@ -146,8 +146,7 @@ export const logoutUser = async (incomingRefreshToken) => {
   await deleteRefreshTokenByHash(hashedRefreshToken);
 
   return {
-    success: true,
-    message: "Session revoked successfully",
+    message: "Logged out successfully",
   };
 };
 
@@ -155,15 +154,34 @@ export const logoutAllUser = async (userId) => {
   await deleteRefreshTokenByUserId(userId);
 
   return {
-    success: true,
-    message: "Logged out from all devices",
+    message: "Successfully logged out from all devices.",
   };
 };
 
 export const getActiveSessions = async (userId) => {
   const sessions = await findSessionsByUserId(userId);
 
+  if (sessions.length == 0) {
+    throw new ApiError(404, "No active session found");
+  }
+
   return {
     sessions,
+  };
+};
+
+export const revokeSpecificSession = async (userId, sessionId) => {
+  if (!sessionId) {
+    throw new ApiError(400, "Session Id is required");
+  }
+
+  const deletedSession = await deleteRefreshTokenById(sessionId, userId);
+
+  if (!deletedSession) {
+    throw new ApiError(404, "Session not found or already revoked");
+  }
+
+  return {
+    message: "Session revoked successfully",
   };
 };

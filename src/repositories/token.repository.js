@@ -20,7 +20,7 @@ export const createRefreshToken = async ({
   return result.insertId;
 };
 
-export const findRefreshToken = async (tokenHash) => {
+export const findRefreshTokenByHash = async (tokenHash) => {
   const query = ` SELECT * FROM refresh_tokens WHERE token_hash = ? LIMIT 1 `;
 
   const [rows] = await pool.execute(query, [tokenHash]);
@@ -28,10 +28,11 @@ export const findRefreshToken = async (tokenHash) => {
   return rows[0];
 };
 
-export const deleteRefreshToken = async (id) => {
-  const query = ` DELETE FROM refresh_tokens WHERE id = ? `;
+export const deleteRefreshTokenById = async (id, userId) => {
+  const query = ` DELETE FROM refresh_tokens WHERE id = ? AND user_id = ? `;
 
-  await pool.execute(query, [id]);
+  const [result] = await pool.execute(query, [id, userId]);
+  return result.affectedRows > 0;
 };
 
 export const deleteRefreshTokenByHash = async (tokenHash) => {
