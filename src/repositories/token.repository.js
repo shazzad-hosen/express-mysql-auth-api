@@ -7,7 +7,7 @@ export const createRefreshToken = async ({
   userAgent,
   ip,
 }) => {
-  const query = ` INSERT INTO refresh_tokens (user_id, token_hash, expires_at, user_agent, ip)VALUES (?, ?, ?, ?, ?) `;
+  const query = ` INSERT INTO refresh_tokens (user_id, token_hash, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?) `;
 
   const [result] = await pool.execute(query, [
     userId,
