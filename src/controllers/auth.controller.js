@@ -6,6 +6,7 @@ import {
   logoutAllUser,
   getActiveSessions,
   revokeSpecificSession,
+  changePassword,
 } from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
@@ -122,5 +123,14 @@ export const revokeSpecificSessionController = async (req, res) => {
   res.status(200).json({
     success: true,
     ...session,
+  });
+};
+
+export const changePasswordController = async (req, res) => {
+  const result = await changePassword(req.userId, req.body);
+
+  res.status(200).json({
+    success: true,
+    ...result,
   });
 };

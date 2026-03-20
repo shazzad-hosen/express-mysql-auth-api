@@ -26,3 +26,16 @@ export const findUserById = async (id) => {
 
   return rows[0];
 };
+
+export const findDataById = async (userId) => {
+  const query = ` SELECT id, password_hash FROM users WHERE id = ? `;
+
+  const [rows] = await pool.execute(query, [userId]);
+  return rows[0];
+};
+
+export const changeUserPassword = async (userId, passwordHash) => {
+  const query = ` UPDATE users SET password_hash = ? WHERE id = ? `;
+
+  await pool.execute(query, [passwordHash, userId]);
+};

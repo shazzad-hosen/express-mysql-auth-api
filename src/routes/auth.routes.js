@@ -11,6 +11,7 @@ import {
   logoutAllUserController,
   getActiveSessionsController,
   revokeSpecificSessionController,
+  changePasswordController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -37,6 +38,12 @@ router.get(
   "/sessions",
   verifyAccessToken,
   asyncHandler(getActiveSessionsController),
+);
+
+router.post(
+  "/change-password",
+  verifyAccessToken,
+  asyncHandler(changePasswordController),
 );
 
 router.delete(

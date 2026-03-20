@@ -6,6 +6,9 @@ import { parseToMs } from "../utils/parseToMs.js";
 import {
   createUser,
   findUserByEmail,
+  findUserById,
+  changeUserPassword,
+  findDataById,
 } from "../repositories/user.repository.js";
 
 import {
@@ -183,5 +186,38 @@ export const revokeSpecificSession = async (userId, sessionId) => {
 
   return {
     message: "Session revoked successfully",
+  };
+};
+
+export const changePassword = async (userId, data) => {
+  const { currentPassword, newPassword } = data;
+
+  if (!currentPassword || !newPassword) {
+    throw new ApiError(400, "Both current and new passwords are required");
+  }
+
+  if (currentPassword === newPassword) {
+    throw new ApiError(400, "New password must be different");
+  }
+
+  const user = await findDataById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const isMatch = await comparePassword(currentPassword, user.password_hash);
+
+  if (!isMatch) {
+    throw new ApiError(401, "Current password is incorrect");
+  }
+
+  const newPasswordHash = await hashPassword(newPassword);
+
+  await changeUserPassword(userId, newPasswordHash);
+  await deleteRefreshTokenByUserId(userId);
+
+  return {
+    message: "Password changed successfully",
   };
 };
