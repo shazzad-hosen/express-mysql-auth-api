@@ -28,7 +28,7 @@ export const generateRefreshToken = async (user) => {
   );
 };
 
-export const hashToken = async (token) => {
+export const generateTokenHash = async (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
 
@@ -38,4 +38,8 @@ export const decodeRefreshToken = async (token) => {
 
 export const decodeAccessToken = async (token) => {
   return jwt.verify(token, ENV.JWT_ACCESS_SECRET);
+};
+
+export const generateResetToken = async () => {
+  return crypto.randomBytes(32).toString("hex");
 };

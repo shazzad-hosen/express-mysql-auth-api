@@ -12,6 +12,7 @@ import {
   getActiveSessionsController,
   revokeSpecificSessionController,
   changePasswordController,
+  forgotPasswordController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -45,6 +46,8 @@ router.post(
   verifyAccessToken,
   asyncHandler(changePasswordController),
 );
+
+router.post("/forgot-password", asyncHandler(forgotPasswordController));
 
 router.delete(
   "/sessions/:id",

@@ -1,9 +1,10 @@
 import pool from "../config/db.js";
 
-export const createPasswordReset = async (userId, tokenHash, expiresAt) => {
+export const createPasswordReset = async ({ userId, tokenHash, expiresAt }) => {
   const query = ` INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?) `;
 
-  await pool.execute(query, [userId, tokenHash, expiresAt]);
+  const [result] = await pool.execute(query, [userId, tokenHash, expiresAt]);
+  return result.insertId;
 };
 
 export const findPasswordResetByTokenHash = async (tokenHash) => {

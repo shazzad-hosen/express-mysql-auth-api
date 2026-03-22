@@ -1,6 +1,6 @@
 import ApiError from "../utils/ApiError.js";
 import { findRefreshTokenByHash } from "../repositories/token.repository.js";
-import { decodeRefreshToken, hashToken } from "../utils/generateTokens.js";
+import { decodeRefreshToken, generateTokenHash } from "../utils/generateTokens.js";
 
 const verifyRefreshToken = async (req, res, next) => {
   const token = req.cookies?.refreshToken;
@@ -12,7 +12,7 @@ const verifyRefreshToken = async (req, res, next) => {
   try {
     const decoded = await decodeRefreshToken(token);
 
-    const hashedToken = await hashToken(token);
+    const hashedToken = await generateTokenHash(token);
     const existingToken = await findRefreshTokenByHash(hashedToken);
 
     if (!existingToken) {

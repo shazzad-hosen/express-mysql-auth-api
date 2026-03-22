@@ -23,8 +23,16 @@ import {
 import {
   generateAccessToken,
   generateRefreshToken,
-  hashToken,
+  generateTokenHash,
+  generateResetToken,
 } from "../utils/generateTokens.js";
+
+import {
+  createPasswordReset,
+  findPasswordResetByTokenHash,
+  markResetTokenUsedById,
+  deleteUserResetTokensByUserId,
+} from "../repositories/passwordReset.repository.js";
 
 export const registerUser = async (data, meta) => {
   const { email, password } = data;
@@ -46,7 +54,7 @@ export const registerUser = async (data, meta) => {
   const accessToken = await generateAccessToken(user);
   const refreshToken = await generateRefreshToken(user);
 
-  const tokenHash = await hashToken(refreshToken);
+  const tokenHash = await generateTokenHash(refreshToken);
 
   const expiresAt = new Date(Date.now() + parseToMs(ENV.JWT_REFRESH_EXPIRY));
 
@@ -84,7 +92,7 @@ export const loginUser = async (data, meta) => {
   const accessToken = await generateAccessToken(user);
   const refreshToken = await generateRefreshToken(user);
 
-  const tokenHash = await hashToken(refreshToken);
+  const tokenHash = await generateTokenHash(refreshToken);
 
   const expiresAt = new Date(Date.now() + parseToMs(ENV.JWT_REFRESH_EXPIRY));
 
@@ -121,7 +129,7 @@ export const refreshUserToken = async (userId, existingRefreshToken, meta) => {
   const newAccessToken = await generateAccessToken(userData);
   const newRefreshToken = await generateRefreshToken(userData);
 
-  const newRefreshHash = await hashToken(newRefreshToken);
+  const newRefreshHash = await generateTokenHash(newRefreshToken);
   const expiresAt = new Date(Date.now() + parseToMs(ENV.JWT_REFRESH_EXPIRY));
 
   await deleteRefreshTokenByHash(existingRefreshToken);
@@ -145,7 +153,7 @@ export const logoutUser = async (incomingRefreshToken) => {
     return { success: true, message: "No active session found" };
   }
 
-  const hashedRefreshToken = await hashToken(incomingRefreshToken);
+  const hashedRefreshToken = await generateTokenHash(incomingRefreshToken);
   await deleteRefreshTokenByHash(hashedRefreshToken);
 
   return {
@@ -219,5 +227,31 @@ export const changePassword = async (userId, data) => {
 
   return {
     message: "Password changed successfully",
+  };
+};
+
+export const forgotPassword = async (email) => {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return {
+      message: "If email exists, reset link sent",
+    };
+  }
+
+  const resetToken = await generateResetToken();
+
+  const tokenHash = await generateTokenHash(resetToken);
+  const expiresAt = new Date(Date.now() + parseToMs(ENV.RESET_TOKEN_EXPIRY));
+
+  await createPasswordReset({
+    userId: user.id,
+    tokenHash,
+    expiresAt,
+  });
+
+  return {
+    message: "Reset link generated",
+    resetToken,
   };
 };
