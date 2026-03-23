@@ -8,6 +8,7 @@ import {
   revokeSpecificSession,
   changePassword,
   forgotPassword,
+  resetPassword,
 } from "../services/auth.service.js";
 
 import { ENV } from "../config/env.js";
@@ -138,6 +139,17 @@ export const changePasswordController = async (req, res) => {
 
 export const forgotPasswordController = async (req, res) => {
   const result = await forgotPassword(req.body.email);
+
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+};
+
+export const resetPasswordController = async (req, res) => {
+  const { token, paswordHash } = req.body;
+
+  const result = await resetPassword(token, paswordHash);
 
   res.status(200).json({
     success: true,

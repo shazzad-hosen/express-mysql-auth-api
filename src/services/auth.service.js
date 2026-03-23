@@ -7,7 +7,7 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
-  changeUserPassword,
+  updateUserPassword,
   findDataById,
 } from "../repositories/user.repository.js";
 
@@ -222,7 +222,7 @@ export const changePassword = async (userId, data) => {
 
   const newPasswordHash = await hashPassword(newPassword);
 
-  await changeUserPassword(userId, newPasswordHash);
+  await updateUserPassword(userId, newPasswordHash);
   await deleteRefreshTokenByUserId(userId);
 
   return {
@@ -253,5 +253,33 @@ export const forgotPassword = async (email) => {
   return {
     message: "Reset link generated",
     resetToken,
+  };
+};
+
+export const resetPassword = async (token, newPassword) => {
+  const tokenHash = await generateTokenHash(token);
+  const resetEntry = await findPasswordResetByTokenHash(tokenHash);
+
+  if (!resetEntry) {
+    throw new ApiError(400, "Invalid or expired token");
+  }
+
+  if (resetEntry.is_used) {
+    throw new ApiError(400, "Token already used");
+  }
+
+  if (new Date(resetEntry.expires_at) < new Date()) {
+    throw new ApiError(400, "Token expired");
+  }
+
+  const newPasswordHash = await hashPassword(newPassword);
+
+  await updateUserPassword(resetEntry.user_id, newPasswordHash);
+  await markResetTokenUsedById(resetEntry.user_id);
+  await deleteRefreshTokenByUserId(resetEntry.user_id);
+  await deleteUserResetTokensByUserId(resetEntry.user_id);
+
+  return {
+    message: "Password reset successful",
   };
 };

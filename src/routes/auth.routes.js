@@ -13,6 +13,7 @@ import {
   revokeSpecificSessionController,
   changePasswordController,
   forgotPasswordController,
+  resetPasswordController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -48,6 +49,8 @@ router.post(
 );
 
 router.post("/forgot-password", asyncHandler(forgotPasswordController));
+
+router.post("/reset-password", asyncHandler(resetPasswordController));
 
 router.delete(
   "/sessions/:id",
