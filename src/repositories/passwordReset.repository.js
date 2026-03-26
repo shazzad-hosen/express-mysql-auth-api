@@ -11,7 +11,7 @@ export const findPasswordResetByTokenHash = async (tokenHash) => {
   const query = ` SELECT * FROM password_resets WHERE token_hash = ? LIMIT 1 `;
 
   const rows = await pool.execute(query, [tokenHash]);
-  return rows[0] || null;
+  return rows[0];
 };
 
 export const markResetTokenUsedById = async (id) => {

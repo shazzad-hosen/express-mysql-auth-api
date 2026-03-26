@@ -34,8 +34,8 @@ export const findDataById = async (userId) => {
   return rows[0];
 };
 
-export const updateUserPassword = async (userId, passwordHash) => {
+export const updateUserPassword = async (id, passwordHash) => {
   const query = ` UPDATE users SET password_hash = ? WHERE id = ? `;
 
-  await pool.execute(query, [passwordHash, userId]);
+  await pool.execute(query, [passwordHash, id]);
 };

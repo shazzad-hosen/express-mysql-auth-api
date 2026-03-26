@@ -258,26 +258,27 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (token, newPassword) => {
   const tokenHash = await generateTokenHash(token);
-  const resetEntry = await findPasswordResetByTokenHash(tokenHash);
+  const resetEntry = await findPasswordResetByTokenHash(tokenHash); // refreshEntry => Array
 
-  if (!resetEntry) {
+  if (!resetEntry || resetEntry.length == 0) {
     throw new ApiError(400, "Invalid or expired token");
   }
 
-  if (resetEntry.is_used) {
+  if (resetEntry[0].is_used) {
     throw new ApiError(400, "Token already used");
   }
 
-  if (new Date(resetEntry.expires_at) < new Date()) {
+  if (new Date(resetEntry[0].expires_at) < new Date()) {
     throw new ApiError(400, "Token expired");
   }
 
   const newPasswordHash = await hashPassword(newPassword);
 
-  await updateUserPassword(resetEntry.user_id, newPasswordHash);
-  await markResetTokenUsedById(resetEntry.user_id);
-  await deleteRefreshTokenByUserId(resetEntry.user_id);
-  await deleteUserResetTokensByUserId(resetEntry.user_id);
+  await updateUserPassword(resetEntry[0].user_id, newPasswordHash);
+  await markResetTokenUsedById(resetEntry[0].id);
+
+  await deleteRefreshTokenByUserId(resetEntry[0].user_id);
+  await deleteUserResetTokensByUserId(resetEntry[0].user_id);
 
   return {
     message: "Password reset successful",
