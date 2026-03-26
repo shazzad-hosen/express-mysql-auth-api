@@ -13,5 +13,5 @@ export const ENV = {
   JWT_ACCESS_EXPIRY: process.env.JWT_ACCESS_EXPIRY,
   JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY,
   NODE_ENV: process.env.NODE_ENV,
-  RESET_TOKEN_EXPIRY: process.env.RESET_TOKEN_EXPIRY,
+  OTP_EXPIRY: process.env.OTP_EXPIRY,
 };

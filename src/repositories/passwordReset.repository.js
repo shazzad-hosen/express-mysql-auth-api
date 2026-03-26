@@ -1,17 +1,17 @@
 import pool from "../config/db.js";
 
-export const createPasswordReset = async ({ userId, tokenHash, expiresAt }) => {
-  const query = ` INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?) `;
+export const createPasswordReset = async ({ userId, otpHash, expiresAt }) => {
+  const query = ` INSERT INTO password_resets (user_id, otp_hash, expires_at) VALUES (?, ?, ?) `;
 
-  const [result] = await pool.execute(query, [userId, tokenHash, expiresAt]);
+  const [result] = await pool.execute(query, [userId, otpHash, expiresAt]);
   return result.insertId;
 };
 
-export const findPasswordResetByTokenHash = async (tokenHash) => {
-  const query = ` SELECT * FROM password_resets WHERE token_hash = ? LIMIT 1 `;
+export const findPasswordResetByOtpHash = async (otpHash) => {
+  const query = `  SELECT * FROM password_resets WHERE otp_hash = ? LIMIT 1 `;
 
-  const rows = await pool.execute(query, [tokenHash]);
-  return rows[0];
+  const [rows] = await pool.execute(query, [otpHash]);
+  return rows[0] || null;
 };
 
 export const markResetTokenUsedById = async (id) => {
@@ -20,7 +20,7 @@ export const markResetTokenUsedById = async (id) => {
   await pool.execute(query, [id]);
 };
 
-export const deleteUserResetTokensByUserId = async (userId) => {
+export const deleteResetOTPByUserId = async (userId) => {
   const query = ` DELETE FROM password_resets WHERE user_id = ? `;
 
   await pool.execute(query, [userId]);

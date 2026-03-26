@@ -11,8 +11,16 @@ export const createUser = async ({ email, passwordHash }) => {
   };
 };
 
+export const findUserByEmailForLogin = async (email) => {
+  const query = ` SELECT id, email, password_hash, is_verified FROM users WHERE email = ? LIMIT 1 `;
+
+  const [rows] = await pool.execute(query, [email]);
+
+  return rows[0];
+};
+
 export const findUserByEmail = async (email) => {
-  const query = ` SELECT * FROM users WHERE email = ? LIMIT 1 `;
+  const query = ` SELECT id, email, is_verified FROM users WHERE email = ? LIMIT 1 `;
 
   const [rows] = await pool.execute(query, [email]);
 
@@ -27,10 +35,10 @@ export const findUserById = async (id) => {
   return rows[0];
 };
 
-export const findDataById = async (userId) => {
+export const findDataById = async (id) => {
   const query = ` SELECT id, password_hash FROM users WHERE id = ? `;
 
-  const [rows] = await pool.execute(query, [userId]);
+  const [rows] = await pool.execute(query, [id]);
   return rows[0];
 };
 

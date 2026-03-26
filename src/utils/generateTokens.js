@@ -40,6 +40,10 @@ export const decodeAccessToken = async (token) => {
   return jwt.verify(token, ENV.JWT_ACCESS_SECRET);
 };
 
-export const generateResetToken = async () => {
-  return crypto.randomBytes(32).toString("hex");
+export const generateOtp = async () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+export const generateOtpHash = async (OTP) => {
+  return crypto.createHash("sha256").update(OTP).digest("hex");
 };
