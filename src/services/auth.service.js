@@ -2,11 +2,13 @@ import { ENV } from "../config/env.js";
 import ApiError from "../utils/ApiError.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { parseToMs } from "../utils/parseToMs.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { getResetOtpTemplate } from "../utils/getResetOTPTemplate.js";
 
 import {
   createUser,
+  findUserByEmailForLogin,
   findUserByEmail,
-  findUserById,
   updateUserPassword,
   findDataById,
 } from "../repositories/user.repository.js";
@@ -24,14 +26,15 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateTokenHash,
-  generateResetToken,
+  generateOtp,
+  generateOtpHash,
 } from "../utils/generateTokens.js";
 
 import {
   createPasswordReset,
-  findPasswordResetByTokenHash,
   markResetTokenUsedById,
-  deleteUserResetTokensByUserId,
+  deleteResetOTPByUserId,
+  findPasswordResetByOtpHash,
 } from "../repositories/passwordReset.repository.js";
 
 export const registerUser = async (data, meta) => {
@@ -77,7 +80,7 @@ export const loginUser = async (data, meta) => {
   const { email, password } = data;
   const { userAgent, ip } = meta;
 
-  const user = await findUserByEmail(email);
+  const user = await findUserByEmailForLogin(email);
 
   if (!user) {
     throw new ApiError(401, "Invalid credentials");
@@ -235,50 +238,66 @@ export const forgotPassword = async (email) => {
 
   if (!user) {
     return {
-      message: "If email exists, reset link sent",
+      message: "If email exists, OTP sent",
     };
   }
 
-  const resetToken = await generateResetToken();
+  const resetOtp = await generateOtp();
 
-  const tokenHash = await generateTokenHash(resetToken);
-  const expiresAt = new Date(Date.now() + parseToMs(ENV.RESET_TOKEN_EXPIRY));
+  const otpHash = await generateOtpHash(resetOtp);
+  const expiresAt = new Date(Date.now() + parseToMs(ENV.OTP_EXPIRY));
 
   await createPasswordReset({
     userId: user.id,
-    tokenHash,
+    otpHash,
     expiresAt,
   });
 
+  await sendEmail({
+    to: user.email,
+    subject: "Your Password Reset Code",
+    html: getResetOtpTemplate(resetOtp),
+  });
+
   return {
-    message: "Reset link generated",
-    resetToken,
+    message: "OTP sent to email",
+    resetOtp,
   };
 };
 
-export const resetPassword = async (token, newPassword) => {
-  const tokenHash = await generateTokenHash(token);
-  const resetEntry = await findPasswordResetByTokenHash(tokenHash); // refreshEntry => Array
+export const resetPassword = async (email, otp, newPassword) => {
+  const user = await findUserByEmail(email);
 
-  if (!resetEntry || resetEntry.length == 0) {
-    throw new ApiError(400, "Invalid or expired token");
+  if (!user) {
+    throw new ApiError(400, "Invalid request");
   }
 
-  if (resetEntry[0].is_used) {
-    throw new ApiError(400, "Token already used");
+  const otpHash = await generateOtpHash(otp);
+  const resetEntry = await findPasswordResetByOtpHash(otpHash);
+
+  if (!resetEntry) {
+    throw new ApiError(400, "Invalid or expired OTP");
   }
 
-  if (new Date(resetEntry[0].expires_at) < new Date()) {
-    throw new ApiError(400, "Token expired");
+  if (resetEntry.is_used) {
+    throw new ApiError(400, "OTP already used");
+  }
+
+  if (new Date(resetEntry.expires_at) < new Date()) {
+    throw new ApiError(400, "OTP expired");
+  }
+
+  if (resetEntry.otp_hash !== otpHash) {
+    throw new ApiError(400, "Invalid OTP");
   }
 
   const newPasswordHash = await hashPassword(newPassword);
 
-  await updateUserPassword(resetEntry[0].user_id, newPasswordHash);
-  await markResetTokenUsedById(resetEntry[0].id);
+  await updateUserPassword(user.id, newPasswordHash);
+  await markResetTokenUsedById(resetEntry.id);
 
-  await deleteRefreshTokenByUserId(resetEntry[0].user_id);
-  await deleteUserResetTokensByUserId(resetEntry[0].user_id);
+  await deleteRefreshTokenByUserId(user.id);
+  await deleteResetOTPByUserId(user.id);
 
   return {
     message: "Password reset successful",
