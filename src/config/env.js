@@ -14,4 +14,6 @@ export const ENV = {
   JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY,
   NODE_ENV: process.env.NODE_ENV,
   OTP_EXPIRY: process.env.OTP_EXPIRY,
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
 };
