@@ -20,7 +20,7 @@ CREATE TABLE refresh_tokens (
 CREATE TABLE email_verifications (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    token_hash VARCHAR(255) UNIQUE NOT NULL,
+    otp_hash VARCHAR(255) UNIQUE NOT NULL,
     expires_at DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -28,7 +28,7 @@ CREATE TABLE email_verifications (
 CREATE TABLE password_resets (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    token_hash VARCHAR(255) UNIQUE NOT NULL,
+    otp_hash VARCHAR(255) UNIQUE NOT NULL,
     is_used BOOLEAN DEFAULT FALSE,
     expires_at DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -36,6 +36,6 @@ CREATE TABLE password_resets (
 );
 CREATE UNIQUE INDEX idx_refresh_token_hash ON refresh_tokens(token_hash);
 CREATE INDEX idx_refresh_user ON refresh_tokens(user_id);
-CREATE INDEX idx_email_verification_token ON email_verifications(token_hash);
-CREATE INDEX idx_password_reset_token ON password_resets(token_hash);
+CREATE INDEX idx_email_verification_otp ON email_verifications(otp_hash);
+CREATE INDEX idx_password_reset_otp ON password_resets(otp_hash);
 CREATE INDEX idx_password_reset_user ON password_resets(user_id);
