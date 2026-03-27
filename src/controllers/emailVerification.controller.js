@@ -1,7 +1,7 @@
 import {
   verifyEmailOTP,
   resendVerificationOTP,
-} from "../services/emailVerification.service";
+} from "../services/emailVerification.service.js";
 
 export const verifyEmailOTPController = async (req, res) => {
   const result = await verifyEmailOTP(req.body);

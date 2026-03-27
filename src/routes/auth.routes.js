@@ -16,6 +16,11 @@ import {
   resetPasswordController,
 } from "../controllers/auth.controller.js";
 
+import {
+  verifyEmailOTPController,
+  resendVerificationController,
+} from "../controllers/emailVerification.controller.js";
+
 const router = express.Router();
 
 router.post("/register", asyncHandler(registerUserController));
@@ -51,6 +56,9 @@ router.post(
 router.post("/forgot-password", asyncHandler(forgotPasswordController));
 
 router.post("/reset-password", asyncHandler(resetPasswordController));
+
+router.post("/verify-email", asyncHandler(verifyEmailOTPController));
+router.post("/resend-verification", asyncHandler(resendVerificationController));
 
 router.delete(
   "/sessions/:id",
