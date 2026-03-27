@@ -1,5 +1,6 @@
 import ApiError from "../utils/ApiError.js";
 import { decodeAccessToken } from "../utils/generateTokens.js";
+import { findUserById } from "../repositories/user.repository.js";
 
 const verifyAccessToken = async (req, res, next) => {
   const authHeader = req.headers?.authorization;
@@ -17,8 +18,12 @@ const verifyAccessToken = async (req, res, next) => {
   try {
     const decoded = await decodeAccessToken(token);
 
-    req.userId = decoded.sub;
-    req.userRole = decoded.role;
+    const user = await findUserById(decoded.sub);
+
+    if (!user) {
+      return next(new ApiError(401, "User no longer exists"));
+    }
+    req.user = user;
 
     next();
   } catch (error) {
