@@ -3,7 +3,8 @@ import ApiError from "../utils/ApiError.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { parseToMs } from "../utils/parseToMs.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import { getResetOtpTemplate } from "../utils/getResetOTPTemplate.js";
+import { sendVerificationOTP } from "./emailVerification.service.js";
+import { getResetOtpTemplate } from "../utils/getResetOtpTemplate.js";
 
 import {
   createUser,
@@ -37,9 +38,12 @@ import {
   findPasswordResetByOtpHash,
 } from "../repositories/passwordReset.repository.js";
 
-export const registerUser = async (data, meta) => {
+export const registerUser = async (data) => {
   const { email, password } = data;
-  const { userAgent, ip } = meta;
+
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
 
   const existingUser = await findUserByEmail(email);
 
@@ -54,25 +58,13 @@ export const registerUser = async (data, meta) => {
     passwordHash,
   });
 
-  const accessToken = await generateAccessToken(user);
-  const refreshToken = await generateRefreshToken(user);
-
-  const tokenHash = await generateTokenHash(refreshToken);
-
-  const expiresAt = new Date(Date.now() + parseToMs(ENV.JWT_REFRESH_EXPIRY));
-
-  await createRefreshToken({
-    userId: user.id,
-    tokenHash,
-    expiresAt,
-    userAgent,
-    ip,
-  });
+  await sendVerificationOTP(user);
 
   return {
-    user,
-    accessToken,
-    refreshToken,
+    user: {
+      id: user.id,
+      email: user.email,
+    },
   };
 };
 
@@ -80,10 +72,18 @@ export const loginUser = async (data, meta) => {
   const { email, password } = data;
   const { userAgent, ip } = meta;
 
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
+
   const user = await findUserByEmailForLogin(email);
 
   if (!user) {
     throw new ApiError(401, "Invalid credentials");
+  }
+
+  if (!user.is_verified) {
+    throw new ApiError(403, "Please verify your email first");
   }
 
   const isMatch = await comparePassword(password, user.password_hash);
@@ -234,6 +234,10 @@ export const changePassword = async (userId, data) => {
 };
 
 export const forgotPassword = async (email) => {
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
   const user = await findUserByEmail(email);
 
   if (!user) {
@@ -261,11 +265,14 @@ export const forgotPassword = async (email) => {
 
   return {
     message: "OTP sent to email",
-    resetOtp,
   };
 };
 
 export const resetPassword = async (email, otp, newPassword) => {
+  if (!email || !otp || !newPassword) {
+    throw new ApiError(400, "Email OTP and New Password are required");
+  }
+
   const user = await findUserByEmail(email);
 
   if (!user) {

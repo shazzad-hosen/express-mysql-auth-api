@@ -48,6 +48,10 @@ export const sendVerificationOTP = async (user) => {
 export const verifyEmailOTP = async (data) => {
   const { email, otp } = data;
 
+  if (!email || !otp) {
+    throw new ApiError(400, "Email and OTP are required");
+  }
+
   const user = await findUserByEmail(email);
 
   if (!user) {
@@ -86,6 +90,10 @@ export const verifyEmailOTP = async (data) => {
 };
 
 export const resendVerificationOTP = async (email) => {
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+  
   const user = await findUserByEmail(email);
 
   if (!user) {
