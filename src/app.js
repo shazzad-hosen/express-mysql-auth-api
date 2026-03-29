@@ -3,10 +3,12 @@ import ApiError from "./utils/ApiError.js";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
+import { globalLimiter } from "./middlewares/rateLimiter.middleware.js";
 
 const app = express();
 
 app.use(cookieParser());
+app.use(globalLimiter);
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));

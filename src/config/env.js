@@ -16,4 +16,7 @@ export const ENV = {
   OTP_EXPIRY: process.env.OTP_EXPIRY,
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASS: process.env.EMAIL_PASS,
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PORT: process.env.REDIS_PORT,
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
 };

@@ -22,14 +22,21 @@ import {
   resendVerificationController,
 } from "../controllers/emailVerification.controller.js";
 
+import {
+  authLimiter,
+  otpLimiter,
+  refreshLimiter,
+} from "../middlewares/rateLimiter.middleware.js";
+
 const router = express.Router();
 
-router.post("/register", asyncHandler(registerUserController));
+router.post("/register", authLimiter, asyncHandler(registerUserController));
 
-router.post("/login", asyncHandler(loginUserController));
+router.post("/login", authLimiter, asyncHandler(loginUserController));
 
 router.post(
   "/refresh",
+  refreshLimiter,
   verifyRefreshToken,
   asyncHandler(refreshUserTokenController),
 );
@@ -57,13 +64,25 @@ router.post(
   asyncHandler(changePasswordController),
 );
 
-router.post("/forgot-password", asyncHandler(forgotPasswordController));
+router.post(
+  "/forgot-password",
+  otpLimiter,
+  asyncHandler(forgotPasswordController),
+);
 
 router.post("/reset-password", asyncHandler(resetPasswordController));
 
-router.post("/verify-email", asyncHandler(verifyEmailOTPController));
+router.post(
+  "/verify-email",
+  otpLimiter,
+  asyncHandler(verifyEmailOTPController),
+);
 
-router.post("/resend-verification", asyncHandler(resendVerificationController));
+router.post(
+  "/resend-verification",
+  otpLimiter,
+  asyncHandler(resendVerificationController),
+);
 
 router.delete(
   "/sessions/:id",
