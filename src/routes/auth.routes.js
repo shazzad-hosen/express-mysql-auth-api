@@ -26,6 +26,7 @@ import {
   authLimiter,
   otpLimiter,
   refreshLimiter,
+  globalLimiter,
 } from "../middlewares/rateLimiter.middleware.js";
 
 const router = express.Router();
@@ -41,10 +42,11 @@ router.post(
   asyncHandler(refreshUserTokenController),
 );
 
-router.post("/logout", asyncHandler(logoutUserController));
+router.post("/logout", globalLimiter, asyncHandler(logoutUserController));
 
 router.post(
   "/logout-all",
+  globalLimiter,
   verifyAccessToken,
   requireVerified,
   asyncHandler(logoutAllUserController),
@@ -52,6 +54,7 @@ router.post(
 
 router.get(
   "/sessions",
+  globalLimiter,
   verifyAccessToken,
   requireVerified,
   asyncHandler(getActiveSessionsController),
@@ -59,6 +62,7 @@ router.get(
 
 router.post(
   "/change-password",
+  globalLimiter,
   verifyAccessToken,
   requireVerified,
   asyncHandler(changePasswordController),
@@ -70,7 +74,11 @@ router.post(
   asyncHandler(forgotPasswordController),
 );
 
-router.post("/reset-password", asyncHandler(resetPasswordController));
+router.post(
+  "/reset-password",
+  globalLimiter,
+  asyncHandler(resetPasswordController),
+);
 
 router.post(
   "/verify-email",
@@ -86,6 +94,7 @@ router.post(
 
 router.delete(
   "/sessions/:id",
+  globalLimiter,
   verifyAccessToken,
   requireVerified,
   asyncHandler(revokeSpecificSessionController),
