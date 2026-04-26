@@ -5,13 +5,22 @@ import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
+import cors from "cors";
 
 const app = express();
 
 app.use(cookieParser());
+app.set("trust proxy", 1);
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  }),
+);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "API is running successfully" });
