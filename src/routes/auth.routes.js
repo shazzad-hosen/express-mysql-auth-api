@@ -3,6 +3,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import verifyRefreshToken from "../middlewares/verifyRefreshToken.middleware.js";
 import verifyAccessToken from "../middlewares/verifyAccessToken.middleware.js";
 import { requireVerified } from "../middlewares/requireVerified.js";
+import { rateLimit } from "../middlewares/rateLimiter.middleware.js";
 
 import {
   registerUserController,
@@ -23,11 +24,11 @@ import {
 } from "../controllers/emailVerification.controller.js";
 
 import {
-  authLimiter,
-  otpLimiter,
-  refreshLimiter,
   globalLimiter,
-} from "../middlewares/rateLimiter.middleware.js";
+  authLimiter,
+  refreshLimiter,
+  otpLimiter,
+} from "../utils/rateLimiters.js";
 
 const router = express.Router();
 
@@ -58,7 +59,7 @@ const router = express.Router();
  *       409:
  *         description: Email already exists
  */
-router.post("/register", authLimiter, asyncHandler(registerUserController));
+router.post("/register", rateLimit(authLimiter), asyncHandler(registerUserController));
 
 /**
  * @swagger
@@ -89,7 +90,7 @@ router.post("/register", authLimiter, asyncHandler(registerUserController));
  *       403:
  *         description: Email not verified
  */
-router.post("/login", authLimiter, asyncHandler(loginUserController));
+router.post("/login", rateLimit(authLimiter), asyncHandler(loginUserController));
 
 /**
  * @swagger
@@ -105,7 +106,7 @@ router.post("/login", authLimiter, asyncHandler(loginUserController));
  */
 router.post(
   "/refresh",
-  refreshLimiter,
+  rateLimit(refreshLimiter),
   verifyRefreshToken,
   asyncHandler(refreshUserTokenController),
 );
@@ -123,11 +124,11 @@ router.post(
  *       200:
  *         description: Logged out successfully
  */
-router.post("/logout", globalLimiter, asyncHandler(logoutUserController));
+router.post("/logout", rateLimit(globalLimiter), asyncHandler(logoutUserController));
 
 router.post(
   "/logout-all",
-  globalLimiter,
+  rateLimit(globalLimiter),
   verifyAccessToken,
   requireVerified,
   asyncHandler(logoutAllUserController),
@@ -159,7 +160,7 @@ router.post(
  */
 router.get(
   "/sessions",
-  globalLimiter,
+  rateLimit(globalLimiter),
   verifyAccessToken,
   requireVerified,
   asyncHandler(getActiveSessionsController),
@@ -167,7 +168,7 @@ router.get(
 
 router.post(
   "/change-password",
-  globalLimiter,
+  rateLimit(globalLimiter),
   verifyAccessToken,
   requireVerified,
   asyncHandler(changePasswordController),
@@ -195,7 +196,7 @@ router.post(
  */
 router.post(
   "/forgot-password",
-  otpLimiter,
+  rateLimit(otpLimiter),
   asyncHandler(forgotPasswordController),
 );
 
@@ -225,7 +226,7 @@ router.post(
  */
 router.post(
   "/reset-password",
-  globalLimiter,
+    rateLimit(globalLimiter),
   asyncHandler(resetPasswordController),
 );
 
@@ -256,7 +257,7 @@ router.post(
  */
 router.post(
   "/verify-email",
-  otpLimiter,
+    rateLimit(otpLimiter),
   asyncHandler(verifyEmailOTPController),
 );
 
@@ -282,7 +283,7 @@ router.post(
  */
 router.post(
   "/resend-verification",
-  otpLimiter,
+  rateLimit(otpLimiter),
   asyncHandler(resendVerificationController),
 );
 
@@ -310,7 +311,7 @@ router.post(
  */
 router.delete(
   "/sessions/:id",
-  globalLimiter,
+    rateLimit(globalLimiter),
   verifyAccessToken,
   requireVerified,
   asyncHandler(revokeSpecificSessionController),
