@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/api/auth",
+        url: "https://express-mysql-auth-api.onrender.com/api/auth",
       },
     ],
     tags: [
