@@ -1,54 +1,41 @@
-# 🔐 Secure Auth API (Node.js + Express + MySQL)
+# 🚀 Production-Grade Auth API (Express + MySQL + Redis)
 
-A **production-ready authentication API** built with Node.js, Express, MySQL, and Redis.
-Designed with real-world security practices: JWT auth, refresh token rotation, OTP verification, rate limiting, and session management.
+A secure, scalable authentication system built with **Node.js**, featuring JWT-based auth, rotating refresh tokens, email verification, OTP flows, and Redis-backed rate limiting.
+
+🔗 **Live API:** https://express-mysql-auth-api.onrender.com <br>
+📘 **API Docs (Swagger):** https://express-mysql-auth-api.onrender.com/api-docs
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-### 🔑 Authentication
-
-* JWT Access Token + Refresh Token
-* Secure Refresh Token Rotation
-* Refresh Token Reuse Detection
-
-### 📧 Email & Verification
-
-* Email Verification (OTP-based)
-* Resend Verification OTP
-* Password Reset via OTP
-
-### 🔐 Security
-
-* Password hashing (bcrypt)
-* Redis-based Rate Limiting
-* Brute-force protection (login throttling)
-* Token hashing (stored securely in DB)
-* HTTP-only cookies for refresh tokens
-
-### 📱 Session Management
-
-* Multi-device login support
-* View active sessions
-* Revoke specific sessions
-* Logout (current device)
+* 🔐 JWT Authentication (Access + Refresh Tokens)
+* 🔄 Refresh Token Rotation + Reuse Detection
+* 📧 Email Verification (OTP-based)
+* 🔑 Forgot / Reset Password (OTP-based)
+* 🚫 Login blocked until email is verified
+* ⚡ Redis Rate Limiting (Upstash)
+* 🧠 Secure Token Hashing (no raw token storage)
+* 🛡️ Protected Routes + Role-based Access
+* 📄 Swagger API Documentation
+* 🌐 Fully deployed (Render + Railway + Upstash)
 
 ---
 
 ## 🧱 Tech Stack
 
 * **Backend:** Node.js, Express
-* **Database:** MySQL
-* **Cache / Rate Limiting:** Redis
+* **Database:** MySQL (Railway)
+* **Cache / Rate Limit:** Upstash Redis
 * **Auth:** JWT
-* **Docs:** Swagger (OpenAPI)
+* **Docs:** Swagger
+* **Deployment:** Render
 
 ---
 
 ## 📂 Project Structure
 
-```
+```bash
 src/
 ├── config/         # DB, Redis, Mail, Env
 ├── controllers/    # Route handlers
@@ -58,44 +45,38 @@ src/
 ├── routes/         # API routes
 ├── utils/          # Helpers (tokens, hashing, etc.)
 └── server.js       # Entry point
+
+```
+---
+
+## 🔐 Auth Flow (High Level)
+
+```text
+User Register → Email OTP → Verify → Login → Access + Refresh Token
+                         ↓
+                 Token Rotation + Reuse Detection
 ```
 
 ---
 
-## 📖 API Documentation
+## 📦 API Endpoints
 
-Interactive API docs available via Swagger:
+### Auth
 
-```
-http://localhost:3000/api-docs
-```
+* `POST /api/auth/register`
+* `POST /api/auth/verify-email`
+* `POST /api/auth/login`
+* `POST /api/auth/refresh`
+* `POST /api/auth/logout`
 
-👉 Test endpoints directly from your browser.
+### Password
 
----
-
-## ⚙️ Setup & Installation
-
-### 1️⃣ Clone the repo
-
-```bash
-git clone https://github.com/shazzad-hosen/express-mysql-auth-api.git
-cd express-mysql-auth-api
-```
+* `POST /api/auth/forgot-password`
+* `POST /api/auth/reset-password`
 
 ---
 
-### 2️⃣ Install dependencies
-
-```bash
-npm install
-```
-
----
-
-### 3️⃣ Setup environment variables
-
-Create a `.env` file:
+## ⚙️ Environment Variables
 
 ```env
 PORT=3000
@@ -103,10 +84,11 @@ NODE_ENV=development
 
 DB_HOST=localhost 
 DB_USER=root 
-DB_PASSWORD=yourpassword 
+DB_PASSWORD=your_password 
 DB_NAME=auth_db
 
-JWT_ACCESS_SECRET=your_access_secret JWT_REFRESH_SECRET=your_refresh_secret
+JWT_ACCESS_SECRET=your_access_secret
+JWT_REFRESH_SECRET=your_refresh_secret
 
 JWT_ACCESS_EXPIRY=15m
 JWT_REFRESH_EXPIRY=7d
@@ -116,122 +98,62 @@ OTP_EXPIRY=10m
 EMAIL_USER=your_email_user
 EMAIL_PASS=your_email_password
 
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-REDIS_PASSWORD=
+REDIS_URL=
+REDIS_TOKEN=
 ```
 
 ---
 
-### 4️⃣ Start services
-
-Make sure:
-
-* MySQL is running
-* Redis is running
-
----
-
-### 5️⃣ Run the server
+## 🧪 Run Locally
 
 ```bash
-npm run dev
+$ git clone https://github.com/shazzad-hosen/express-mysql-auth-api.git
+
+$ cd express-mysql-auth-api
+
+$ npm install
+
+$ npm run dev
 ```
-
----
-
-## 🔐 Auth Flow
-
-### Register
-
-```
-POST /api/auth/register
-```
-
-→ Creates user
-→ Sends verification OTP
-
----
-
-### Verify Email
-
-```
-POST /api/auth/verify-email
-```
-
-→ Activates account
-
----
-
-### Login
-
-```
-POST /api/auth/login
-```
-
-→ Returns access + refresh tokens
-
----
-
-### Refresh Token
-
-```
-POST /api/auth/refresh
-```
-
-→ Rotates refresh token securely
-
----
-
-### Logout
-
-```
-POST /api/auth/logout
-```
-
-→ Deletes current session
 
 ---
 
 ## 🧠 Security Highlights
 
-* Refresh tokens stored **hashed** (not raw)
-* Token reuse detection (prevents stolen token attacks)
-* Rate limiting with Redis (distributed safe)
-* OTP expiration + secure verification flow
-* Session-based device tracking
+* Refresh tokens are **hashed before storage**
+* **Token reuse detection** invalidates sessions
+* **Rate limiting** prevents brute-force attacks
+* Email verification required before login
+* Password reset uses **short-lived OTPs**
+* HTTP-only cookies for refresh tokens
 
 ---
 
-## 📸 Preview
+## 🌍 Deployment Architecture
 
-> Swagger UI (API testing interface)
-
-![Swagger Screenshot](./assets/Swagger.png)
-
----
-
-## 🧪 Testing
-
-You can test endpoints using:
-
-* Swagger UI (`/api-docs`)
-* Postman / Thunder Client
+```text
+Client
+  ↓
+Render (Express API)
+  ↓
+Railway (MySQL)
+  ↓
+Upstash (Redis)
+```
 
 ---
 
 ## 📌 Future Improvements
 
 * Role-based access control (RBAC)
-* Audit logging system
+* 2FA (Authenticator apps)
 * Docker support
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome.
-Feel free to open issues or submit pull requests.
+PRs are welcome. Feel free to fork and improve.
 
 ---
 
