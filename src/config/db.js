@@ -1,9 +1,12 @@
 import mysql from "mysql2/promise";
 import { ENV } from "./env.js";
 
-console.log(ENV.DB_PORT);
-console.log(ENV.DB_HOST);
-console.log(typeof ENV.DB_PORT);
+console.log({
+  host: ENV.DB_HOST,
+  port: ENV.DB_PORT,
+  user: ENV.DB_USER,
+  database: ENV.DB_NAME,
+});
 
 const pool = mysql.createPool({
   host: ENV.DB_HOST,
@@ -15,6 +18,7 @@ const pool = mysql.createPool({
   ssl: {
     rejectUnauthorized: false,
   },
+  connectTimeout: 10000,
 });
 
 export default pool;
