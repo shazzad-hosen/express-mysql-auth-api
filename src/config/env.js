@@ -19,5 +19,4 @@ export const ENV = {
   EMAIL_PASS: process.env.EMAIL_PASS,
   REDIS_URL: process.env.REDIS_URL,
   REDIS_TOKEN: process.env.REDIS_TOKEN,
-  DB_URL: process.env.DB_URL,
 };
