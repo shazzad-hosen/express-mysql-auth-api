@@ -3,12 +3,28 @@ import { ENV } from "./env.js";
 
 import dns from "dns/promises";
 
-try {
-  const result = await dns.lookup(ENV.DB_HOST);
-  console.log("DNS:", result);
-} catch (err) {
-  console.error("DNS ERROR:", err);
-}
+import net from "net";
+
+const socket = net.createConnection({
+  host: ENV.DB_HOST,
+  port: Number(ENV.DB_PORT),
+});
+
+socket.on("connect", () => {
+  console.log("TCP CONNECTED");
+  socket.destroy();
+});
+
+socket.on("error", (err) => {
+  console.error("TCP ERROR:", err);
+});
+
+socket.setTimeout(10000);
+
+socket.on("timeout", () => {
+  console.error("TCP TIMEOUT");
+  socket.destroy();
+});
 
 console.log("HOST:", ENV.DB_HOST);
 
