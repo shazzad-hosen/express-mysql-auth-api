@@ -1,12 +1,16 @@
 import mysql from "mysql2/promise";
 import { ENV } from "./env.js";
 
-console.log({
-  host: ENV.DB_HOST,
-  port: ENV.DB_PORT,
-  user: ENV.DB_USER,
-  database: ENV.DB_NAME,
-});
+import dns from "dns/promises";
+
+try {
+  const result = await dns.lookup(ENV.DB_HOST);
+  console.log("DNS:", result);
+} catch (err) {
+  console.error("DNS ERROR:", err);
+}
+
+console.log("HOST:", ENV.DB_HOST);
 
 const pool = mysql.createPool({
   host: ENV.DB_HOST,
