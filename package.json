@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Production Ready Auth API with Node.js, Express, MySQL, JWT",
   "main": "src/server.js",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
@@ -16,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "bugs": {
     "url": "https://github.com/shazzad-hosen/express-mysql-auth-api/issues"
