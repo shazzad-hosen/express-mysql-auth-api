@@ -11,13 +11,14 @@ const pool = mysql.createPool({
 
   ssl: {
     ca: fs.readFileSync("./certs/ca.pem"),
+    rejectUnauthorized: false,
   },
-  connectTimeout: 20000,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  connectTimeout: 30000,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 30000
+  keepAliveInitialDelay: 10000,
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
 });
 
 export default pool;
