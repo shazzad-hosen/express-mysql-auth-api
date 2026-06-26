@@ -34,7 +34,7 @@ export const loginUserController = async (req, res) => {
 
   res.cookie("refreshToken", result.refreshToken, {
     httpOnly: true,
-    secure: ENV.NODE_ENV,
+    secure: ENV.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: parseToMs(ENV.JWT_REFRESH_EXPIRY),
   });
@@ -57,7 +57,7 @@ export const refreshUserTokenController = async (req, res) => {
 
   res.cookie("refreshToken", tokens.refreshToken, {
     httpOnly: true,
-    secure: ENV.NODE_ENV,
+    secure: ENV.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: parseToMs(ENV.JWT_REFRESH_EXPIRY),
   });
