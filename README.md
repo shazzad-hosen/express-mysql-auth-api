@@ -18,14 +18,14 @@ A secure, scalable authentication system built with **Node.js**, featuring JWT-b
 * 🧠 Secure Token Hashing (no raw token storage)
 * 🛡️ Protected Routes + Role-based Access
 * 📄 Swagger API Documentation
-* 🌐 Fully deployed (Render + Railway + Upstash)
+* 🌐 Fully deployed (Render + Aiven + Upstash)
 
 ---
 
 ## 🧱 Tech Stack
 
 * **Backend:** Node.js, Express
-* **Database:** MySQL (Railway)
+* **Database:** MySQL (Aiven)
 * **Cache / Rate Limit:** Upstash Redis
 * **Auth:** JWT
 * **Docs:** Swagger
@@ -82,10 +82,11 @@ User Register → Email OTP → Verify → Login → Access + Refresh Token
 PORT=3000
 NODE_ENV=development
 
-DB_HOST=localhost 
-DB_USER=root 
-DB_PASSWORD=your_password 
-DB_NAME=auth_db
+DB_HOST=your_aiven_db_host
+DB_USER=avnadmin
+DB_PORT=23067
+DB_PASSWORD=your_db_password 
+DB_NAME=defaultdb
 
 JWT_ACCESS_SECRET=your_access_secret
 JWT_REFRESH_SECRET=your_refresh_secret
@@ -98,8 +99,8 @@ OTP_EXPIRY=10m
 EMAIL_USER=your_email_user
 EMAIL_PASS=your_email_password
 
-REDIS_URL=
-REDIS_TOKEN=
+REDIS_URL=your_redis_user
+REDIS_TOKEN=your_redis_toen
 ```
 
 ---
@@ -165,7 +166,7 @@ If you find this useful, give it a ⭐ on GitHub.
 
 ## 👨‍💻 Author
 
-Built by: **Shazzad Hosen Zisan**
+Built by: **Shazzad Hosen**
 
 ---
 
