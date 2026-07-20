@@ -100,7 +100,7 @@ EMAIL_USER=your_email_user
 EMAIL_PASS=your_email_password
 
 REDIS_URL=your_redis_user
-REDIS_TOKEN=your_redis_toen
+REDIS_TOKEN=your_redis_token
 ```
 
 ---
